@@ -172,7 +172,7 @@ class EditDialog(QDialog):
     def update_student(self):
         connection = DatabaseConnection().connect()
         cursor = connection.cursor()
-        cursor.execute("UPDATE students SET name = ?, course = ?, mobile = ? WHERE id = ?",
+        cursor.execute("UPDATE students SET name = %, course = %, mobile = % WHERE id = %",
                        (self.student_name.text(),
                         self.course_name.itemText(self.course_name.currentIndex()),
                         self.mobile.text(),
@@ -209,7 +209,7 @@ class DeleteDialog(QDialog):
 
         connection = sqlite3.connect("database.db")
         cursor = connection.cursor()
-        cursor.execute("DELETE from students WHERE id = ?", (student_id, ))
+        cursor.execute("DELETE from students WHERE id = %", (student_id, ))
         connection.commit()
         cursor.close()
         connection.close()
@@ -261,7 +261,7 @@ class InsertDialog(QDialog):
         mobile = self.mobile.text()
         connection = DatabaseConnection().connect()
         cursor = connection.cursor()
-        cursor.execute("INSERT INTO students (name, course, mobile) VALUES (?, ?, ?)",
+        cursor.execute("INSERT INTO students (name, course, mobile) VALUES (%, %, %)",
                        (name, course, mobile))
         connection.commit()
         cursor.close()
@@ -294,7 +294,7 @@ class SearchDialog(QDialog):
         name = self.student_name.text()
         connection = DatabaseConnection().connect()
         cursor = connection.cursor()
-        result = cursor.execute("SELECT * FROM students WHERE name = ?", (name,))
+        result = cursor.execute("SELECT * FROM students WHERE name = %", (name,))
         rows = list(result)
         print(rows)
         items = main_window.table.findItems(name, Qt.MatchFlag.MatchFixedString)
