@@ -13,12 +13,14 @@ load_dotenv()
 
 class DatabaseConnection:
     def __init__(self, host="localhost", user="root", password=os.getenv("MY_SQL_PASSWORD"), database="school"):
+        """ Initialize the database connection parameters """
         self.host = host
         self.user = user
         self.password = password
         self.database = database
 
     def connect(self):
+        """ Create a connection to the database """
         connection = mysql.connector.connect(
             host=self.host,
             user=self.user,
@@ -30,6 +32,7 @@ class DatabaseConnection:
 
 class MainWindow(QMainWindow):
     def __init__(self):
+        """ Initialize the main window """
         super().__init__()
         self.setWindowTitle("Student Management System")
         self.setMinimumSize(800, 600)
@@ -73,6 +76,7 @@ class MainWindow(QMainWindow):
         self.table.cellClicked.connect(self.cell_clicked)
 
     def cell_clicked(self):
+        """ Detect a cell click and show edit and delete buttons """
         edit_button = QPushButton("Edit Record")
         edit_button.clicked.connect(self.edit)
 
@@ -88,6 +92,7 @@ class MainWindow(QMainWindow):
         self.statusbar.addWidget(delete_button)
 
     def load_data(self):
+        """ Load data from the database and display it in the table """
         connection = DatabaseConnection().connect()
         cursor = connection.cursor()
         cursor.execute("SELECT * FROM students")
@@ -100,28 +105,34 @@ class MainWindow(QMainWindow):
         connection.close()
 
     def insert(self):
+        """ Open the insert dialog """
         dialog = InsertDialog()
         dialog.exec()
 
     def search(self):
+        """ Open the search dialog """
         dialog = SearchDialog()
         dialog.exec()
 
     def edit(self):
+        """ Open the edit dialog """
         dialog = EditDialog()
         dialog.exec()
 
     def delete(self):
+        """ Open the delete dialog """
         dialog = DeleteDialog()
         dialog.exec()
 
     def about(self):
+        """ Open the about dialog """
         dialog = AboutDialog()
         dialog.exec()
 
 
 class AboutDialog(QMessageBox):
     def __init__(self):
+        """ Initialize the about dialog """
         super().__init__()
         self.setWindowTitle("About")
         content = """
@@ -132,6 +143,7 @@ class AboutDialog(QMessageBox):
 
 class EditDialog(QDialog):
     def __init__(self):
+        """ Initialize the edit dialog """
         super().__init__()
         self.setWindowTitle("Update Student Data")
         self.setFixedWidth(300)
@@ -172,6 +184,7 @@ class EditDialog(QDialog):
         self.setLayout(layout)
 
     def update_student(self):
+        """ Update student data in the database """
         connection = DatabaseConnection().connect()
         cursor = connection.cursor()
         cursor.execute("UPDATE students SET name = %s, course = %s, mobile = %s WHERE id = %s",
@@ -189,6 +202,7 @@ class EditDialog(QDialog):
 
 class DeleteDialog(QDialog):
     def __init__(self):
+        """ Initialize the delete dialog """
         super().__init__()
         self.setWindowTitle("Delete Student Data")
 
@@ -205,6 +219,7 @@ class DeleteDialog(QDialog):
         yes.clicked.connect(self.delete_student)
 
     def delete_student(self):
+        """ Delete student data from the database """
         # Get selected row index and student id
         index = main_window.table.currentRow()
         student_id = main_window.table.item(index, 0).text()
@@ -227,6 +242,7 @@ class DeleteDialog(QDialog):
 
 class InsertDialog(QDialog):
     def __init__(self):
+        """ Initialize the insert dialog """
         super().__init__()
         self.setWindowTitle("Insert Student Data")
         self.setFixedWidth(300)
@@ -258,6 +274,7 @@ class InsertDialog(QDialog):
         self.setLayout(layout)
 
     def add_student(self):
+        """ Add student data to the database """
         name = self.student_name.text()
         course = self.course_name.itemText(self.course_name.currentIndex())
         mobile = self.mobile.text()
@@ -273,6 +290,7 @@ class InsertDialog(QDialog):
 
 class SearchDialog(QDialog):
     def __init__(self):
+        """ Initialize the search dialog """
         super().__init__()
         # Set window title and size
         self.setWindowTitle("Search Student")
@@ -293,6 +311,7 @@ class SearchDialog(QDialog):
         self.setLayout(layout)
 
     def search(self):
+        """ Search for a student in the database """
         name = self.student_name.text()
         connection = DatabaseConnection().connect()
         cursor = connection.cursor()
@@ -308,7 +327,7 @@ class SearchDialog(QDialog):
         cursor.close()
         connection.close()
 
-
+# Run the application
 app = QApplication(sys.argv)
 main_window = MainWindow()
 main_window.show()
